@@ -13,8 +13,6 @@ ARG CODEGRAPH_VERSION
 
 ENV DEBIAN_FRONTEND=noninteractive \
     DEVENV_TOOLS=/opt/devenv-tools \
-    GOMODCACHE=/cache/go-mod \
-    GOCACHE=/cache/go-build \
     HOME=/tmp/devenv-home
 
 COPY --from=node /usr/local/bin/node /usr/local/bin/node
@@ -41,11 +39,15 @@ RUN test "$(dpkg --print-architecture)" = "amd64" \
 
 RUN mkdir -p "${DEVENV_TOOLS}/bin" \
     && GOBIN="${DEVENV_TOOLS}/bin" GOWORK=off \
-       go install "golang.org/x/tools/gopls@${GOPLS_VERSION}"
+       go install "golang.org/x/tools/gopls@${GOPLS_VERSION}" \
+    && rm -rf /go/pkg/mod /root/.cache/go-build
 
 RUN UV_TOOL_DIR="${DEVENV_TOOLS}/uv" \
     UV_TOOL_BIN_DIR="${DEVENV_TOOLS}/bin" \
-    uv tool install --python 3.13 "serena-agent==${SERENA_VERSION}"
+    UV_PYTHON_INSTALL_DIR="${DEVENV_TOOLS}/python" \
+    UV_CACHE_DIR=/tmp/uv-cache \
+    uv tool install --python 3.13 "serena-agent==${SERENA_VERSION}" \
+    && rm -rf /tmp/uv-cache
 
 RUN set -eux; \
     root="${DEVENV_TOOLS}/codegraph"; \
@@ -57,7 +59,9 @@ RUN set -eux; \
     test -x "${engine}"; \
     ln -s "${engine}" "${DEVENV_TOOLS}/bin/codegraph-server"
 
-ENV CODEGRAPH_SERVER_PATH=/opt/devenv-tools/bin/codegraph-server
+ENV CODEGRAPH_SERVER_PATH=/opt/devenv-tools/bin/codegraph-server \
+    GOMODCACHE=/cache/go-mod \
+    GOCACHE=/cache/go-build
 
 COPY entrypoint.sh /usr/local/bin/devenv-entrypoint
 RUN chmod 0755 /usr/local/bin/devenv-entrypoint
