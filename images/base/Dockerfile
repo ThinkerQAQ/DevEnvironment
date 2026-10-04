@@ -1,10 +1,9 @@
 ARG NODE_VERSION
-FROM node:${NODE_VERSION}-bookworm-slim AS node
-
 ARG UV_VERSION
-FROM ghcr.io/astral-sh/uv:${UV_VERSION} AS uv
-
 ARG GO_VERSION
+
+FROM node:${NODE_VERSION}-bookworm-slim AS node
+FROM ghcr.io/astral-sh/uv:${UV_VERSION} AS uv
 FROM golang:${GO_VERSION}-bookworm
 
 ARG GOPLS_VERSION
