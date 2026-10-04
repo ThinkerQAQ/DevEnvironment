@@ -148,7 +148,7 @@ jobs:
           docker run --rm \
             -e DEVENV_RUN_UID=10001 \
             -e DEVENV_RUN_GID=10001 \
-            "$image" sh -lc '
+            "$image" sh -c '
               test "$(id -u)" = "10001"
               test "$HOME" = "/tmp/devenv-home"
               getent passwd "$(id -u)" >/dev/null
