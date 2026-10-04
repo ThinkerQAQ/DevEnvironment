@@ -141,6 +141,20 @@ jobs:
             -v "$GITHUB_WORKSPACE:/repo:ro" \
             "$image" /repo/scripts/verify-base.sh /repo/versions/tools.env
 
+      - name: Verify non-root entrypoint
+        shell: bash
+        run: |
+          image="$REGISTRY/$IMAGE_OWNER/dev-base:${{ steps.tags.outputs.BASE_TAG }}"
+          docker run --rm \
+            -e DEVENV_RUN_UID=10001 \
+            -e DEVENV_RUN_GID=10001 \
+            "$image" sh -lc '
+              test "$(id -u)" = "10001"
+              test "$HOME" = "/tmp/devenv-home"
+              getent passwd "$(id -u)" >/dev/null
+              serena --help >/dev/null
+            '
+
       - name: Build and push Android
         id: android
         uses: docker/build-push-action@v6
