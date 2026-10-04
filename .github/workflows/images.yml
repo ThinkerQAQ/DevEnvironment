@@ -43,7 +43,7 @@ jobs:
 
       - name: Load versions
         shell: bash
-        run: cat versions/tools.env >> "$GITHUB_ENV"
+        run: grep -E '^[A-Z0-9_]+=' versions/tools.env >> "$GITHUB_ENV"
 
       - name: Set up Buildx
         uses: docker/setup-buildx-action@v3
@@ -91,7 +91,7 @@ jobs:
 
       - name: Load versions
         shell: bash
-        run: cat versions/tools.env >> "$GITHUB_ENV"
+        run: grep -E '^[A-Z0-9_]+=' versions/tools.env >> "$GITHUB_ENV"
 
       - name: Resolve image tags
         id: tags
