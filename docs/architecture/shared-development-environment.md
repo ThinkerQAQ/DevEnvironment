@@ -29,7 +29,7 @@ dev-android
 ├── JDK 17
 ├── Gradle 8.9
 ├── Android Platform 35
-├── Build Tools 35.0.0
+├── Build Tools 34.0.0 + 35.0.0
 ├── NDK r30
 └── make / pkg-config
 ```
@@ -62,7 +62,7 @@ golang.org/x/mobile v0.0.0-20240326195318-268e6c3a80d1
 
 DownKit explicitly validates that `gomobile` and `gobind` match `bridge/go.mod`. A single mobile-tool version baked into `dev-android` would make at least one consumer incorrect.
 
-The shared Android image therefore provides Go + JDK + SDK + NDK only. Each project resolves the exact mobile tools required by its own module.
+The shared Android image therefore provides Go + JDK + SDK + NDK only. It carries both Build Tools 34.0.0 and 35.0.0 because current consumers span Android Gradle Plugin defaults across that boundary; each project still owns its AGP version and resolves the exact mobile tools required by its own module.
 
 ## 5. Why there is no browser profile yet
 
