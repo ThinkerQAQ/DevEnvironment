@@ -1,3 +1,4 @@
+# check=skip=InvalidDefaultArgInFrom
 ARG NODE_VERSION
 ARG UV_VERSION
 ARG GO_VERSION
