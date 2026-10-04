@@ -71,6 +71,7 @@ jobs:
             --build-arg ANDROID_CMDLINE_TOOLS_SHA256="$ANDROID_CMDLINE_TOOLS_SHA256" \
             --build-arg ANDROID_PLATFORM="$ANDROID_PLATFORM" \
             --build-arg ANDROID_BUILD_TOOLS="$ANDROID_BUILD_TOOLS" \
+            --build-arg ANDROID_BUILD_TOOLS_COMPAT="$ANDROID_BUILD_TOOLS_COMPAT" \
             --build-arg ANDROID_NDK="$ANDROID_NDK" \
             -f images/android/Dockerfile images/android
 
@@ -172,6 +173,7 @@ jobs:
             ANDROID_CMDLINE_TOOLS_SHA256=${{ env.ANDROID_CMDLINE_TOOLS_SHA256 }}
             ANDROID_PLATFORM=${{ env.ANDROID_PLATFORM }}
             ANDROID_BUILD_TOOLS=${{ env.ANDROID_BUILD_TOOLS }}
+            ANDROID_BUILD_TOOLS_COMPAT=${{ env.ANDROID_BUILD_TOOLS_COMPAT }}
             ANDROID_NDK=${{ env.ANDROID_NDK }}
           cache-from: type=gha,scope=dev-android
           cache-to: type=gha,scope=dev-android,mode=max
