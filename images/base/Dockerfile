@@ -13,7 +13,8 @@ ARG CODEGRAPH_VERSION
 
 ENV DEBIAN_FRONTEND=noninteractive \
     DEVENV_TOOLS=/opt/devenv-tools \
-    HOME=/tmp/devenv-home
+    HOME=/tmp/devenv-home \
+    SERENA_HOME=/tmp/devenv-home/.serena
 
 COPY --from=node /usr/local/bin/node /usr/local/bin/node
 COPY --from=node /usr/local/lib/node_modules /usr/local/lib/node_modules

@@ -6,10 +6,18 @@ Public, reusable development environments for ThinkerQAQ repositories.
 
 | Image | Purpose | Current consumers |
 | --- | --- | --- |
-| `ghcr.io/thinkerqaq/dev-base` | Go + Node + uv + shared code-intelligence tools | go-tiny-claw, IDFlow, DownKit desktop/bridge |
-| `ghcr.io/thinkerqaq/dev-android` | `dev-base` + JDK 17 + Gradle 8.9 + Android SDK/NDK | PhotoWaypoint, DownKit Android |
+| `ghcr.io/thinkerqaq/dev-base` | Go + Node + uv + shared code-intelligence tools (gopls, Serena, CodeGraph) | go-tiny-claw, IDFlow, DownKit desktop/bridge |
+| `ghcr.io/thinkerqaq/dev-android` | `dev-base` + Kotlin LSP + JDK 17 + Gradle 8.9 + Android SDK/NDK | PhotoWaypoint, DownKit Android |
 
 The images contain **development platform dependencies only**. Project source code, project DevTools, credentials, databases, browser sessions, and project-specific build tools stay in the consuming repositories.
+
+### Kotlin language intelligence
+
+`dev-android` preinstalls the Kotlin Language Server and points Serena at that executable through its runtime-global `ls_specific_settings`.
+
+The image downloads Kotlin LSP from JetBrains' stable `download.jetbrains.com` entrypoint and verifies the exact SHA256 from `versions/tools.env`. Serena therefore does not depend on its managed direct-CDN download path at runtime.
+
+Kotlin LSP is a shared code-intelligence dependency, so its version belongs to DevEnvironment rather than to PhotoWaypoint or DevTool.
 
 The shared images intentionally do **not** own:
 

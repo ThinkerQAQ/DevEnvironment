@@ -26,6 +26,7 @@ dev-base
      ▼
 dev-android
 ├── everything in dev-base
+├── Kotlin LSP 263.4702.0
 ├── JDK 17
 ├── Gradle 8.9
 ├── Android Platform 35
@@ -46,6 +47,14 @@ dev-android
 | DownKit bridge/desktop | `dev-base` | FFmpeg/yt-dlp/whisper/llama/release behavior |
 | DownKit Android | `dev-android` | matching gomobile/gobind, FFmpeg Android build configuration |
 
+### 3.1 Shared code-intelligence dependency ownership
+
+Shared language tooling belongs to DevEnvironment when multiple repositories or DevTool providers rely on it and its installation is independent of business source.
+
+For Kotlin, `dev-android` owns the Kotlin LSP version and SHA256, downloads it through JetBrains' stable `download.jetbrains.com` entrypoint, preinstalls `intellij-server`, and lets the inherited entrypoint generate a minimal runtime Serena configuration that binds `ls_specific_settings.kotlin.ls_path` to that executable. Keeping the roughly 1.2 GB Kotlin/JBR payload out of `dev-base` avoids burdening Go/Node-only consumers.
+
+Serena remains the realtime intelligence adapter. DevTool continues to call the stable `code-realtime` service and does not know how Kotlin LSP is downloaded or installed. Project repositories therefore do not carry CDN/version workarounds.
+
 ## 4. Why gomobile/gobind are project-owned
 
 PhotoWaypoint currently pins:
@@ -62,7 +71,7 @@ golang.org/x/mobile v0.0.0-20240326195318-268e6c3a80d1
 
 DownKit explicitly validates that `gomobile` and `gobind` match `bridge/go.mod`. A single mobile-tool version baked into `dev-android` would make at least one consumer incorrect.
 
-The shared Android image therefore provides Go + JDK + SDK + NDK only. It carries both Build Tools 34.0.0 and 35.0.0 because current consumers span Android Gradle Plugin defaults across that boundary; each project still owns its AGP version and resolves the exact mobile tools required by its own module.
+The shared Android image therefore provides Go + Kotlin language intelligence + JDK + SDK + NDK, while project-specific `gomobile`/`gobind` remain outside the image. It carries both Build Tools 34.0.0 and 35.0.0 because current consumers span Android Gradle Plugin defaults across that boundary; each project still owns its AGP version and resolves the exact mobile tools required by its own module.
 
 ## 5. Why there is no browser profile yet
 

@@ -4,6 +4,8 @@ FROM ${BASE_IMAGE}
 
 ARG GRADLE_VERSION
 ARG GRADLE_SHA256
+ARG KOTLIN_LSP_VERSION
+ARG KOTLIN_LSP_SHA256
 ARG ANDROID_CMDLINE_TOOLS_REVISION
 ARG ANDROID_CMDLINE_TOOLS_SHA256
 ARG ANDROID_PLATFORM
@@ -26,6 +28,20 @@ RUN apt-get update \
         openjdk-17-jdk-headless \
         pkg-config \
     && rm -rf /var/lib/apt/lists/*
+
+RUN set -eux; \
+    archive="/tmp/kotlin-server-${KOTLIN_LSP_VERSION}.tar.gz"; \
+    root="${DEVENV_TOOLS}/kotlin-lsp/${KOTLIN_LSP_VERSION}"; \
+    curl -fL --retry 3 --retry-delay 2 \
+      -o "${archive}" \
+      "https://download.jetbrains.com/language-server/kotlin-server/${KOTLIN_LSP_VERSION}/kotlin-server-${KOTLIN_LSP_VERSION}.tar.gz"; \
+    echo "${KOTLIN_LSP_SHA256}  ${archive}" | sha256sum -c -; \
+    mkdir -p "${root}"; \
+    tar -xzf "${archive}" -C "${root}"; \
+    test -x "${root}/kotlin-server-${KOTLIN_LSP_VERSION}/bin/intellij-server"; \
+    rm -f "${archive}"
+
+ENV DEVENV_KOTLIN_LSP=${DEVENV_TOOLS}/kotlin-lsp/${KOTLIN_LSP_VERSION}/kotlin-server-${KOTLIN_LSP_VERSION}/bin/intellij-server
 
 RUN set -eux; \
     curl -fsSL "https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip" -o /tmp/gradle.zip; \
