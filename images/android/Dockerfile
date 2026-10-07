@@ -14,6 +14,7 @@ ARG ANDROID_BUILD_TOOLS_COMPAT
 ARG ANDROID_NDK
 
 ENV DEBIAN_FRONTEND=noninteractive \
+    DEVENV_TOOLS=/opt/devenv-tools \
     JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64 \
     ANDROID_HOME=/opt/android-sdk \
     ANDROID_SDK_ROOT=/opt/android-sdk \
