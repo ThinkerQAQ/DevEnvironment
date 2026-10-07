@@ -67,6 +67,8 @@ jobs:
             --build-arg BASE_IMAGE=debian:bookworm-slim \
             --build-arg GRADLE_VERSION="$GRADLE_VERSION" \
             --build-arg GRADLE_SHA256="$GRADLE_SHA256" \
+            --build-arg KOTLIN_LSP_VERSION="$KOTLIN_LSP_VERSION" \
+            --build-arg KOTLIN_LSP_SHA256="$KOTLIN_LSP_SHA256" \
             --build-arg ANDROID_CMDLINE_TOOLS_REVISION="$ANDROID_CMDLINE_TOOLS_REVISION" \
             --build-arg ANDROID_CMDLINE_TOOLS_SHA256="$ANDROID_CMDLINE_TOOLS_SHA256" \
             --build-arg ANDROID_PLATFORM="$ANDROID_PLATFORM" \
@@ -169,6 +171,8 @@ jobs:
             BASE_IMAGE=${{ env.REGISTRY }}/${{ env.IMAGE_OWNER }}/dev-base@${{ steps.base.outputs.digest }}
             GRADLE_VERSION=${{ env.GRADLE_VERSION }}
             GRADLE_SHA256=${{ env.GRADLE_SHA256 }}
+            KOTLIN_LSP_VERSION=${{ env.KOTLIN_LSP_VERSION }}
+            KOTLIN_LSP_SHA256=${{ env.KOTLIN_LSP_SHA256 }}
             ANDROID_CMDLINE_TOOLS_REVISION=${{ env.ANDROID_CMDLINE_TOOLS_REVISION }}
             ANDROID_CMDLINE_TOOLS_SHA256=${{ env.ANDROID_CMDLINE_TOOLS_SHA256 }}
             ANDROID_PLATFORM=${{ env.ANDROID_PLATFORM }}
@@ -192,6 +196,14 @@ jobs:
             --entrypoint bash \
             -v "$GITHUB_WORKSPACE:/repo:ro" \
             "$image" /repo/scripts/verify-android.sh /repo/versions/tools.env
+          docker run --rm \
+            -e DEVENV_RUN_UID=10001 \
+            -e DEVENV_RUN_GID=10001 \
+            "$image" sh -c '
+              test "$(id -u)" = "10001"
+              test -x "$DEVENV_KOTLIN_LSP"
+              grep -F "$DEVENV_KOTLIN_LSP" "$SERENA_HOME/serena_config.yml" >/dev/null
+            '
 
       - name: Publish summary
         shell: bash

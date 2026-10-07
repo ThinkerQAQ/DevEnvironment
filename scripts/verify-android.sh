@@ -31,4 +31,8 @@ echo "ANDROID_NDK_HOME: ${ANDROID_NDK_HOME}"
 command -v make
 command -v sdkmanager
 
+test -n "${DEVENV_KOTLIN_LSP:-}"
+test -x "${DEVENV_KOTLIN_LSP}"
+echo "Kotlin LSP: ${DEVENV_KOTLIN_LSP}"
+
 echo "dev-android verification passed"
