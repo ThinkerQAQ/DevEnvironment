@@ -78,7 +78,9 @@ jobs:
             -f images/android/Dockerfile images/android
 
   publish:
-    if: github.event_name != 'pull_request'
+    # Source availability does not authorize redistribution of SDK/LSP binaries.
+    # Review the exact image's component licenses before enabling publication.
+    if: github.event_name != 'pull_request' && vars.DEVENV_ALLOW_IMAGE_PUBLISH == 'true'
     needs: validate
     runs-on: ubuntu-latest
     steps:

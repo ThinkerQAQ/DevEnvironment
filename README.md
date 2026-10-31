@@ -1,6 +1,10 @@
 # DevEnvironment
 
-Public, reusable development environments for ThinkerQAQ repositories.
+[简体中文](README_ZH.md) · [MIT License](LICENSE) · [Third-party notices](THIRD_PARTY_NOTICES.md)
+
+**Status: experimental shared tooling; open-source build definitions, separately reviewed image distribution.**
+
+Reusable development environments for ThinkerQAQ repositories. This is companion infrastructure to [DevTool (formerly DEV2)](https://github.com/ThinkerQAQ/DevTool): DevTool owns the Docker environment provider and project lifecycle, whereas DevEnvironment owns shared toolchain definitions and immutable image references. Both can be used independently.
 
 ## Images
 
@@ -69,7 +73,7 @@ docs/
 
 ## CI
 
-Pull requests validate scripts and Dockerfiles. Pushes to `main` build and publish the immutable GHCR tags using the public repository's GitHub-hosted runner.
+Pull requests and pushes to `main` validate scripts and Dockerfiles. **Image publishing is disabled by default** and requires setting the repository variable `DEVENV_ALLOW_IMAGE_PUBLISH=true` after exact-component license/redistribution review. This is an operational guard, not permission to redistribute. See [third-party notices](THIRD_PARTY_NOTICES.md).
 
 To inspect the image tags produced by the current source:
 
@@ -77,6 +81,6 @@ To inspect the image tags produced by the current source:
 bash scripts/image-tags.sh
 ```
 
-After the first successful package publish, set the GHCR packages to the visibility required by consuming repositories. Public visibility allows anonymous pull from private projects and cloud development hosts.
+Keep GHCR package visibility independent of repository visibility. Do not make preinstalled Android images public without verified redistribution permission for the Google Android SDK and proprietary Kotlin LSP components. Existing digest-pinned consumers can continue using packages they are authorized to access.
 
 See [Shared Development Environment Architecture](docs/architecture/shared-development-environment.md) for the ownership model and consumer mapping.

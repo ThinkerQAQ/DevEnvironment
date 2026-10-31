@@ -96,13 +96,17 @@ ghcr.io/thinkerqaq/dev-android:env-<android-hash>
 
 The Android hash includes the base hash, so every base-environment change creates a new Android environment identity.
 
-GitHub Actions uses this flow:
+GitHub Actions validates pushes and pull requests without publishing images.
+Publication is a separate opt-in requiring `DEVENV_ALLOW_IMAGE_PUBLISH=true`,
+which must not be enabled until all third-party redistribution terms for the
+actual built images have been reviewed. Source availability alone does not
+authorize redistribution of Google Android SDK or proprietary Kotlin LSP binaries.
 
 ```text
-Pull Request
+Pull Request / main push
   → validate scripts and Dockerfiles
 
-main push / manual dispatch
+main push / manual dispatch + explicit publication opt-in
   → build + push dev-base
   → verify pulled dev-base
   → build dev-android FROM exact dev-base digest
@@ -158,8 +162,8 @@ ChatGPT
 
 ## 10. Initial acceptance criteria
 
-1. `dev-base` builds on a public GitHub-hosted runner and publishes to GHCR.
-2. `dev-android` builds from the exact published base digest.
+1. `dev-base` can be built on a GitHub-hosted runner; publication requires completed license review.
+2. `dev-android` can build from the exact base digest, but public distribution requires separate Android SDK/NDK and Kotlin LSP permission review.
 3. Both images pass post-push smoke verification.
 4. GHCR package visibility permits intended consumers to pull the images.
 5. PhotoWaypoint can replace its project-local development Dockerfile with a pinned `dev-android` image.
