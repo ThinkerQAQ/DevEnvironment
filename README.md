@@ -53,10 +53,16 @@ This can download large upstream toolchains and run their installation hooks. No
 
 ### 2.4. Verify and run one program
 
-```bash
-docker run --rm --platform linux/amd64   --entrypoint bash -v "$PWD:/repo:ro"   devenv-base:local /repo/scripts/verify-base.sh /repo/versions/tools.env
+Run these checks from the same repository directory after the image finishes building.
 
-docker run --rm --platform linux/amd64 devenv-base:local   sh -c 'printf "package main\nfunc main() { println(42) }\n" > /tmp/hello.go; go run /tmp/hello.go'
+```bash
+docker run --rm --platform linux/amd64 \
+  --entrypoint bash -v "$PWD:/repo:ro" \
+  devenv-base:local \
+  /repo/scripts/verify-base.sh /repo/versions/tools.env
+
+docker run --rm --platform linux/amd64 devenv-base:local \
+  sh -c 'printf "package main\nfunc main() { println(42) }\n" > /tmp/hello.go; go run /tmp/hello.go'
 ```
 
 Success means the verifier prints `dev-base verification passed` and the Go program prints `42`, both with exit code 0. Building an image or resolving tags alone is not the full Quick Start verification.
@@ -94,9 +100,14 @@ android_args=(--build-arg BASE_IMAGE=devenv-base:local)
 for key in GRADLE_VERSION GRADLE_SHA256 KOTLIN_LSP_VERSION KOTLIN_LSP_SHA256 ANDROID_CMDLINE_TOOLS_REVISION ANDROID_CMDLINE_TOOLS_SHA256 ANDROID_PLATFORM ANDROID_BUILD_TOOLS ANDROID_BUILD_TOOLS_COMPAT ANDROID_NDK; do
   android_args+=(--build-arg "$key=${!key}")
 done
-docker buildx build --load --platform linux/amd64 "${android_args[@]}"   -t devenv-android:local -f images/android/Dockerfile images/android
+docker buildx build --load --platform linux/amd64 \
+  "${android_args[@]}" \
+  -t devenv-android:local -f images/android/Dockerfile images/android
 
-docker run --rm --platform linux/amd64 --entrypoint bash   -v "$PWD:/repo:ro" devenv-android:local   /repo/scripts/verify-android.sh /repo/versions/tools.env
+docker run --rm --platform linux/amd64 \
+  --entrypoint bash -v "$PWD:/repo:ro" \
+  devenv-android:local \
+  /repo/scripts/verify-android.sh /repo/versions/tools.env
 ```
 
 Require `dev-android verification passed`. This is substantially larger than the base workflow. When a non-default Buildx driver cannot resolve a locally loaded base image, use the default Docker driver or an authorized registry digest. The Android Dockerfile runs SDK license acceptance commands; building does not grant redistribution rights.

@@ -53,10 +53,16 @@ docker buildx build --load --platform linux/amd64 \
 
 ### 2.4. 验证并运行一个程序
 
-```bash
-docker run --rm --platform linux/amd64   --entrypoint bash -v "$PWD:/repo:ro"   devenv-base:local /repo/scripts/verify-base.sh /repo/versions/tools.env
+镜像构建完成后，仍在同一个仓库目录运行下面的验证命令。
 
-docker run --rm --platform linux/amd64 devenv-base:local   sh -c 'printf "package main\nfunc main() { println(42) }\n" > /tmp/hello.go; go run /tmp/hello.go'
+```bash
+docker run --rm --platform linux/amd64 \
+  --entrypoint bash -v "$PWD:/repo:ro" \
+  devenv-base:local \
+  /repo/scripts/verify-base.sh /repo/versions/tools.env
+
+docker run --rm --platform linux/amd64 devenv-base:local \
+  sh -c 'printf "package main\nfunc main() { println(42) }\n" > /tmp/hello.go; go run /tmp/hello.go'
 ```
 
 完成标准：检查脚本输出 `dev-base verification passed`，Go 示例输出 `42`，两次命令均以 0 结束。仅镜像构建或标签计算成功不算完整 Quick Start 验收。
@@ -94,9 +100,14 @@ android_args=(--build-arg BASE_IMAGE=devenv-base:local)
 for key in GRADLE_VERSION GRADLE_SHA256 KOTLIN_LSP_VERSION KOTLIN_LSP_SHA256 ANDROID_CMDLINE_TOOLS_REVISION ANDROID_CMDLINE_TOOLS_SHA256 ANDROID_PLATFORM ANDROID_BUILD_TOOLS ANDROID_BUILD_TOOLS_COMPAT ANDROID_NDK; do
   android_args+=(--build-arg "$key=${!key}")
 done
-docker buildx build --load --platform linux/amd64 "${android_args[@]}"   -t devenv-android:local -f images/android/Dockerfile images/android
+docker buildx build --load --platform linux/amd64 \
+  "${android_args[@]}" \
+  -t devenv-android:local -f images/android/Dockerfile images/android
 
-docker run --rm --platform linux/amd64 --entrypoint bash   -v "$PWD:/repo:ro" devenv-android:local   /repo/scripts/verify-android.sh /repo/versions/tools.env
+docker run --rm --platform linux/amd64 \
+  --entrypoint bash -v "$PWD:/repo:ro" \
+  devenv-android:local \
+  /repo/scripts/verify-android.sh /repo/versions/tools.env
 ```
 
 应输出 `dev-android verification passed`。该镜像明显大于基础镜像。非默认 Buildx 驱动无法解析本地基础镜像时，使用默认 Docker 驱动或已授权 registry digest。Android Dockerfile 会执行 SDK 许可接受命令，构建不代表获得再分发许可。
